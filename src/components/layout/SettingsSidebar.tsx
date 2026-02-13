@@ -1,13 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useRef, useEffect } from "react"
-import { Settings, X, Palette, Type, AlignLeft } from "lucide-react"
+import { Settings, X, Palette, Type, AlignLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { useSettings } from "@/stores/settingsStore"
 import { applyTheme, type Theme } from "@/lib/themes"
 import { cn } from "@/lib/utils"
 
-type RightSidebarProps = {
+type SettingsSidebar = {
   isOpen: boolean
   onToggle: () => void
 }
@@ -26,7 +26,7 @@ const fontOptions: { value: "inter" | "georgia" | "jetbrains" | "system"; label:
   { value: "system", label: "System" },
 ]
 
-export const RightSidebar = ({ isOpen, onToggle }: RightSidebarProps) => {
+export const SettingsSidebar = ({ isOpen, onToggle }: SettingsSidebar) => {
   const { settings, updateTheme, updateFontSize, updateLineHeight, updateFontFamily } = useSettings()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [isScrolling, setIsScrolling] = useState(false)
@@ -65,13 +65,14 @@ export const RightSidebar = ({ isOpen, onToggle }: RightSidebarProps) => {
       <AnimatePresence>
         {isOpen ? (
           <motion.aside
+            key="settings-sidebar"
             initial={{ x: 400, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 400, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed right-0 top-0 h-full w-80 bg-surface/95 backdrop-blur-md border-l border-border shadow-xl z-40 flex flex-col"
           >
-            <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="flex items-center justify-between p-2 border-b border-border">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <Settings className="h-5 w-5" />
                 Settings
@@ -82,17 +83,17 @@ export const RightSidebar = ({ isOpen, onToggle }: RightSidebarProps) => {
                 onClick={onToggle}
                 className="h-8 w-8"
               >
-                <X className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
             <div
               ref={scrollContainerRef}
               className={cn(
-                "flex-1 overflow-y-auto px-8 py-8 space-y-10 outline-scrollbar",
+                "flex-1 overflow-y-auto p-2 space-y-7 outline-scrollbar",
                 isScrolling && "scrolling"
               )}
             >
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <Palette className="h-4 w-4" />
                   Theme
@@ -117,7 +118,7 @@ export const RightSidebar = ({ isOpen, onToggle }: RightSidebarProps) => {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <Type className="h-4 w-4" />
                   Font Family
@@ -135,9 +136,9 @@ export const RightSidebar = ({ isOpen, onToggle }: RightSidebarProps) => {
                         className="w-full h-auto py-2.5 text-sm"
                         style={{
                           fontFamily: option.value === "inter" ? "Inter, sans-serif" :
-                                     option.value === "georgia" ? "Georgia, serif" :
-                                     option.value === "jetbrains" ? "'JetBrains Mono', monospace" :
-                                     "system-ui, sans-serif"
+                            option.value === "georgia" ? "Georgia, serif" :
+                              option.value === "jetbrains" ? "'JetBrains Mono', monospace" :
+                                "system-ui, sans-serif"
                         }}
                       >
                         {option.label}
@@ -178,36 +179,37 @@ export const RightSidebar = ({ isOpen, onToggle }: RightSidebarProps) => {
                   <Slider
                     value={[settings.lineHeight]}
                     onValueChange={([value]) => updateLineHeight(value)}
-                    min={1.4}
-                    max={2.2}
+                    min={1.0}
+                    max={2.5}
                     step={0.1}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>1.4</span>
+                    <span>1.0</span>
                     <span className="font-medium">{settings.lineHeight.toFixed(1)}</span>
-                    <span>2.2</span>
+                    <span>2.5</span>
                   </div>
                 </div>
               </div>
             </div>
           </motion.aside>
-        ) : (
-          <motion.button
-            initial={{ x: 400, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 400, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            onClick={onToggle}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="fixed right-4 top-20 z-40 h-10 w-10 rounded-full bg-surface/90 backdrop-blur-md border border-border shadow-lg flex items-center justify-center hover:bg-accent/50 transition-colors"
-            aria-label="Open settings"
-          >
-            <Settings className="h-5 w-5" />
-          </motion.button>
-        )}
+        ) : null}
       </AnimatePresence>
+      {!isOpen ? (
+        <motion.button
+          initial={{ x: 400, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: 400, opacity: 0 }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          onClick={onToggle}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="fixed right-4 top-20 z-40 h-10 w-10 rounded-full bg-surface/90 backdrop-blur-md border border-border shadow-lg flex items-center justify-center hover:bg-accent/50 transition-colors"
+          aria-label="Open settings"
+        >
+          <Settings className="h-5 w-5" />
+        </motion.button>
+      ) : null}
     </>
   )
 }

@@ -13,9 +13,9 @@ export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
   return (
     <div
       className={cn(
-        "prose prose-lg max-w-none",
+        "prose prose-sm max-w-none",
         "prose-headings:font-semibold prose-headings:text-foreground",
-        "prose-p:text-foreground prose-p:leading-relaxed",
+        "prose-p:text-foreground",
         "prose-a:text-primary prose-a:no-underline hover:prose-a:underline",
         "prose-strong:text-foreground prose-strong:font-semibold",
         "prose-code:text-primary prose-code:bg-surface prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm",
@@ -30,9 +30,9 @@ export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
         fontSize: `${settings.fontSize}px`,
         lineHeight: `${settings.lineHeight}`,
         fontFamily: settings.fontFamily === "inter" ? "Inter, sans-serif" :
-                   settings.fontFamily === "georgia" ? "Georgia, serif" :
-                   settings.fontFamily === "jetbrains" ? "'JetBrains Mono', monospace" :
-                   "system-ui, -apple-system, sans-serif",
+          settings.fontFamily === "georgia" ? "Georgia, serif" :
+            settings.fontFamily === "jetbrains" ? "'JetBrains Mono', monospace" :
+              "system-ui, -apple-system, sans-serif",
       }}
     >
       <ReactMarkdown

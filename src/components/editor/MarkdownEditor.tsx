@@ -26,8 +26,8 @@ export const MarkdownEditor = ({ value, onChange }: MarkdownEditorProps) => {
         }}
         className="text-base"
         style={{
-          fontSize: `${settings.fontSize}px`,
-          lineHeight: `${settings.lineHeight}`,
+          fontSize: `${settings.fontSize}px !important`,
+          lineHeight: `${settings.lineHeight} !important`,
         }}
       />
     </div>

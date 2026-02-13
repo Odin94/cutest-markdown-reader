@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useRef, useEffect } from "react"
-import { List, X } from "lucide-react"
+import { ChevronLeft, List, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useMarkdownOutline, type Heading } from "@/hooks/useMarkdownOutline"
 import { cn } from "@/lib/utils"
@@ -59,7 +59,7 @@ export const LeftSidebar = ({
         whileHover={{ x: 4 }}
         whileTap={{ scale: 0.98 }}
         className={cn(
-          "w-full text-left py-3 rounded-md transition-colors hover:bg-accent/50 leading-relaxed",
+          "w-full text-left rounded-md transition-colors hover:bg-accent/50 leading-relaxed",
           isActive ? "bg-accent/30 text-primary font-medium" : "text-foreground/80"
         )}
         style={{ paddingLeft: `${1.5 + indent * 1.5}rem` }}
@@ -74,26 +74,27 @@ export const LeftSidebar = ({
       <AnimatePresence>
         {isOpen ? (
           <motion.aside
+            key="left-sidebar"
             initial={{ x: -300, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed left-0 top-0 h-full w-64 bg-surface/95 backdrop-blur-md border-r border-border shadow-xl z-40 flex flex-col"
           >
-            <div className="flex items-center justify-end p-4 border-b border-border">
+            <div className="flex items-center justify-start p-4">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onToggle}
                 className="h-8 w-8"
               >
-                <X className="h-4 w-4" />
+                <ChevronLeft className="h-4 w-4" />
               </Button>
             </div>
             <div
               ref={scrollContainerRef}
               className={cn(
-                "flex-1 overflow-y-auto px-6 py-6 outline-scrollbar",
+                "flex-1 overflow-y-auto px-2 outline-scrollbar",
                 isScrolling && "scrolling"
               )}
               style={{ scrollbarGutter: "stable" }}
@@ -109,22 +110,23 @@ export const LeftSidebar = ({
               )}
             </div>
           </motion.aside>
-        ) : (
-          <motion.button
-            initial={{ x: -300, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -300, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            onClick={onToggle}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="fixed left-4 top-20 z-40 h-10 w-10 rounded-full bg-surface/90 backdrop-blur-md border border-border shadow-lg flex items-center justify-center hover:bg-accent/50 transition-colors"
-            aria-label="Open document outline"
-          >
-            <List className="h-5 w-5" />
-          </motion.button>
-        )}
+        ) : null}
       </AnimatePresence>
+      {!isOpen ? (
+        <motion.button
+          initial={{ x: -300, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          exit={{ x: -300, opacity: 0 }}
+          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          onClick={onToggle}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="fixed left-4 top-20 z-40 h-10 w-10 rounded-full bg-surface/90 backdrop-blur-md border border-border shadow-lg flex items-center justify-center hover:bg-accent/50 transition-colors"
+          aria-label="Open document outline"
+        >
+          <List className="h-5 w-5" />
+        </motion.button>
+      ) : null}
     </>
   )
 }

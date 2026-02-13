@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { LeftSidebar } from "./LeftSidebar"
-import { RightSidebar } from "./SettingsSidebar"
+import { SettingsSidebar } from "./SettingsSidebar"
 import { ModeToggle } from "../mode/ModeToggle"
 
 type Mode = "write" | "read"
@@ -64,7 +64,7 @@ export const AppLayout = ({
         </div>
       </main>
 
-      <RightSidebar
+      <SettingsSidebar
         isOpen={rightSidebarOpen}
         onToggle={() => setRightSidebarOpen(!rightSidebarOpen)}
       />
