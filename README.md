@@ -17,3 +17,6 @@ I made this page because I wanted to have a pretty page to read markdown documen
 ### How to run locally
 * `npm install`
 * `npm run dev`
+
+### Credits
+* favicon by [Smashicons - Flaticon](https://www.flaticon.com/free-icons/book)
