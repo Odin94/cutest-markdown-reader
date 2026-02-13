@@ -4,7 +4,7 @@ import { applyTheme, type Theme } from "@/lib/themes"
 import { cn } from "@/lib/utils"
 import { useSettings } from "@/stores/settingsStore"
 import { AnimatePresence, motion } from "framer-motion"
-import { AlignLeft, ChevronRight, Palette, Settings, Type } from "lucide-react"
+import { AlignLeft, ChevronRight, ExternalLink, Palette, Settings, Type } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 
 type SettingsSidebarProps = {
@@ -191,6 +191,17 @@ export const SettingsSidebar = ({ isOpen, onToggle }: SettingsSidebarProps) => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="w-full p-4 border-t border-border flex justify-center items-center">
+              <a
+                href="https://odin-matthias.de"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
+              >
+                <span>odin-matthias.de</span>
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
             </div>
           </motion.aside>
         ) : null}
