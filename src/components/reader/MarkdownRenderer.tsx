@@ -180,7 +180,7 @@ export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
         remarkPlugins={[remarkGfm]}
         components={{
           code: (props) => {
-            const { node, inline, className, children, ...rest } = props as {
+            const { node: _node, inline, className, children, ...rest } = props as {
               node?: unknown
               inline?: boolean
               className?: string

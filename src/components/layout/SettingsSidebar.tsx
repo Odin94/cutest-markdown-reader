@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { AlignLeft, ChevronRight, Palette, Settings, Type } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 
-type SettingsSidebar = {
+type SettingsSidebarProps = {
   isOpen: boolean
   onToggle: () => void
 }
@@ -26,7 +26,7 @@ const fontOptions: { value: "inter" | "georgia" | "jetbrains" | "system"; label:
   { value: "system", label: "System" },
 ]
 
-export const SettingsSidebar = ({ isOpen, onToggle }: SettingsSidebar) => {
+export const SettingsSidebar = ({ isOpen, onToggle }: SettingsSidebarProps) => {
   const { settings, updateTheme, updateFontSize, updateLineHeight, updateFontFamily } = useSettings()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [isScrolling, setIsScrolling] = useState(false)
