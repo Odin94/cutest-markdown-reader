@@ -15,6 +15,9 @@ const App = () => {
   const headings = useMarkdownOutline(markdown)
 
   useEffect(() => {
+    const scrollContainer = document.getElementById("reader-scroll")
+    if (!scrollContainer) return
+
     const handleScroll = () => {
       if (mode !== "read") return
 
@@ -24,21 +27,23 @@ const App = () => {
 
       if (headingElements.length === 0) return
 
-      const scrollPosition = window.scrollY + 100
+      const mainRect = scrollContainer.getBoundingClientRect()
+      const topOffset = mainRect.top + 120
 
       for (let i = headingElements.length - 1; i >= 0; i--) {
-        const element = headingElements[i]
-        if (element.offsetTop <= scrollPosition) {
+        const rect = headingElements[i].getBoundingClientRect()
+        if (rect.top <= topOffset) {
           setCurrentHeadingId(headings[i].id)
-          break
+          return
         }
       }
+      setCurrentHeadingId(undefined)
     }
 
-    window.addEventListener("scroll", handleScroll)
+    scrollContainer.addEventListener("scroll", handleScroll)
     handleScroll()
 
-    return () => window.removeEventListener("scroll", handleScroll)
+    return () => scrollContainer.removeEventListener("scroll", handleScroll)
   }, [mode, headings])
 
   const handleHeadingClick = (id: string) => {

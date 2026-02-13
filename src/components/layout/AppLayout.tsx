@@ -48,7 +48,7 @@ export const AppLayout = ({
         currentHeadingId={currentHeadingId}
       />
 
-      <main className="fixed inset-0 overflow-y-auto z-30" style={{ paddingTop: "100px" }}>
+      <main id="reader-scroll" className="reader-scrollbar fixed inset-0 overflow-y-auto z-30" style={{ paddingTop: "100px" }}>
         <div className="max-w-4xl mx-auto px-12 py-12">
           <AnimatePresence mode="wait">
             <motion.div

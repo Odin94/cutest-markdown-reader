@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { useMarkdownOutline, type Heading } from "@/hooks/useMarkdownOutline"
-import { cn } from "@/lib/utils"
+import { cn, getReadingTimeMinutes } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronLeft, List } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
@@ -81,7 +81,7 @@ export const LeftSidebar = ({
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed left-0 top-0 h-full w-64 bg-surface/95 backdrop-blur-md border-r border-border shadow-xl z-40 flex flex-col"
           >
-            <div className="flex items-center justify-start p-4">
+            <div className="flex items-center justify-start p-2 border-b border-border">
               <Button
                 variant="ghost"
                 size="icon"
@@ -90,6 +90,9 @@ export const LeftSidebar = ({
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
+              <p className="text-xs text-muted-foreground px-2">
+                {getReadingTimeMinutes(markdown)} min read
+              </p>
             </div>
             <div
               ref={scrollContainerRef}
