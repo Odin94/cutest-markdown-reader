@@ -1,11 +1,11 @@
-import { motion, AnimatePresence } from "framer-motion"
-import { useState, useRef, useEffect } from "react"
-import { Settings, X, Palette, Type, AlignLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { useSettings } from "@/stores/settingsStore"
 import { applyTheme, type Theme } from "@/lib/themes"
 import { cn } from "@/lib/utils"
+import { useSettings } from "@/stores/settingsStore"
+import { AnimatePresence, motion } from "framer-motion"
+import { AlignLeft, ChevronRight, Palette, Settings, Type } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 type SettingsSidebar = {
   isOpen: boolean

@@ -1,9 +1,9 @@
-import { motion, AnimatePresence } from "framer-motion"
-import { useState, useRef, useEffect } from "react"
-import { ChevronLeft, List, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useMarkdownOutline, type Heading } from "@/hooks/useMarkdownOutline"
 import { cn } from "@/lib/utils"
+import { AnimatePresence, motion } from "framer-motion"
+import { ChevronLeft, List } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
 type LeftSidebarProps = {
   isOpen: boolean
