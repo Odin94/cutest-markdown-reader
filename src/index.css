@@ -94,3 +94,8 @@ body {
 .outline-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: var(--color-primary);
 }
+
+.prose code::before,
+.prose code::after {
+    content: none;
+}
