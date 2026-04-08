@@ -26,7 +26,7 @@ export const ModeToggle = ({
       transition={{ duration: 0.18, ease: "easeOut" }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-surface/90 backdrop-blur-md rounded-full p-2 border border-border shadow-xl"
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-surface/90 backdrop-blur-md rounded-full p-2 border border-border shadow-md"
     >
       <Button
         variant={mode === "write" ? "default" : "ghost"}

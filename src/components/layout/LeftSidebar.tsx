@@ -124,7 +124,7 @@ export const LeftSidebar = ({
           onClick={onToggle}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="fixed left-4 top-20 z-40 h-10 w-10 rounded-full bg-surface/90 backdrop-blur-md border border-border shadow-lg flex items-center justify-center hover:bg-accent/50 transition-colors"
+          className="fixed left-4 top-20 z-40 h-10 w-10 rounded-full bg-surface/90 backdrop-blur-md border border-border shadow-sm flex items-center justify-center hover:bg-accent/50 transition-colors"
           aria-label="Open document outline"
         >
           <List className="h-5 w-5" />
