@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { BookOpen, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -8,13 +9,23 @@ type Mode = "write" | "read"
 type ModeToggleProps = {
   mode: Mode
   onModeChange: (mode: Mode) => void
+  opacity?: number
 }
 
-export const ModeToggle = ({ mode, onModeChange }: ModeToggleProps) => {
+export const ModeToggle = ({
+  mode,
+  onModeChange,
+  opacity = 1,
+}: ModeToggleProps) => {
+  const [isHovered, setIsHovered] = useState(false)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ opacity: isHovered ? 1 : opacity, y: 0 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
       className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-surface/90 backdrop-blur-md rounded-full p-2 border border-border shadow-xl"
     >
       <Button
