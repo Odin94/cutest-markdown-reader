@@ -3,6 +3,7 @@ import { motion } from "framer-motion"
 import { BookOpen, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useSettings } from "@/stores/settingsStore"
 
 type Mode = "write" | "read"
 
@@ -18,6 +19,8 @@ export const ModeToggle = ({
   opacity = 1,
 }: ModeToggleProps) => {
   const [isHovered, setIsHovered] = useState(false)
+  const { settings } = useSettings()
+  const isDark = settings.theme === "dark"
 
   return (
     <motion.div
@@ -34,7 +37,8 @@ export const ModeToggle = ({
         onClick={() => onModeChange("write")}
         className={cn(
           "rounded-full transition-all relative px-6 py-2",
-          mode === "write" ? "shadow-sm" : ""
+          mode === "write" ? "shadow-sm" : "",
+          isDark && mode === "write" ? "bg-primary text-[#2D293D] hover:bg-accent/50 hover:text-[#2D293D]" : ""
         )}
       >
         <Edit className="h-5 w-5 mr-2" />
@@ -42,7 +46,7 @@ export const ModeToggle = ({
         {mode === "write" && (
           <motion.div
             layoutId="activeMode"
-            className="absolute inset-0 rounded-full bg-primary/20 -z-10"
+            className="absolute inset-0 rounded-full bg-secondary/30 -z-10"
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         )}
@@ -53,7 +57,8 @@ export const ModeToggle = ({
         onClick={() => onModeChange("read")}
         className={cn(
           "rounded-full transition-all relative px-6 py-2",
-          mode === "read" ? "shadow-sm" : ""
+          mode === "read" ? "shadow-sm" : "",
+          isDark && mode === "read" ? "bg-primary text-[#2D293D] hover:bg-accent/50 hover:text-[#2D293D]" : ""
         )}
       >
         <BookOpen className="h-5 w-5 mr-2" />
@@ -61,7 +66,7 @@ export const ModeToggle = ({
         {mode === "read" && (
           <motion.div
             layoutId="activeMode"
-            className="absolute inset-0 rounded-full bg-primary/20 -z-10"
+            className="absolute inset-0 rounded-full bg-secondary/30 -z-10"
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
           />
         )}

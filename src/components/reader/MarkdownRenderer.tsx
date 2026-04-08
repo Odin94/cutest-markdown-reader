@@ -150,18 +150,21 @@ const CodeBlock = ({
 
 export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
   const { settings } = useSettings()
+  const isDark = settings.theme === "dark"
 
   return (
     <div
       className={cn(
-        "prose prose-sm max-w-none",
+        "prose prose-sm max-w-none text-foreground",
+        isDark && "prose-invert",
         "prose-headings:font-semibold prose-headings:text-foreground",
-        "prose-p:text-foreground",
+        "prose-p:text-foreground prose-li:text-foreground prose-td:text-foreground prose-th:text-foreground",
         "prose-a:text-primary prose-a:no-underline hover:prose-a:underline",
         "prose-strong:text-foreground prose-strong:font-semibold",
+        "prose-em:text-foreground",
         "prose-code:text-primary prose-code:bg-surface prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm",
         "prose-pre:bg-transparent prose-pre:p-0 prose-pre:border-0",
-        "prose-blockquote:border-l-primary prose-blockquote:border-l-4 prose-blockquote:pl-4 prose-blockquote:italic",
+        "prose-blockquote:text-foreground/85 prose-blockquote:border-l-primary prose-blockquote:border-l-4 prose-blockquote:pl-4 prose-blockquote:italic",
         "prose-ul:list-disc prose-ol:list-decimal",
         "prose-li:marker:text-primary",
         "prose-hr:border-border",

@@ -184,7 +184,10 @@ export const SettingsSidebar = ({
                       <Button
                         variant={settings.theme === option.value ? "default" : "outline"}
                         onClick={() => handleThemeChange(option.value)}
-                        className="h-auto py-3 flex flex-col items-center gap-1 w-full"
+                        className={cn(
+                          "h-auto py-3 flex flex-col items-center gap-1 w-full",
+                          settings.theme === "dark" && settings.theme === option.value && "text-[#2D293D] hover:text-[#2D293D]"
+                        )}
                       >
                         <span className="text-xl">{option.emoji}</span>
                         <span className="text-xs">{option.label}</span>
@@ -209,7 +212,10 @@ export const SettingsSidebar = ({
                       <Button
                         variant={settings.fontFamily === option.value ? "default" : "outline"}
                         onClick={() => updateFontFamily(option.value)}
-                        className="w-full h-auto py-2.5 text-sm"
+                        className={cn(
+                          "w-full h-auto py-2.5 text-sm",
+                          settings.theme === "dark" && settings.fontFamily === option.value && "text-[#2D293D] hover:text-[#2D293D]"
+                        )}
                         style={{
                           fontFamily: option.value === "inter" ? "Inter, sans-serif" :
                             option.value === "georgia" ? "Georgia, serif" :
@@ -298,7 +304,10 @@ export const SettingsSidebar = ({
                           <Button
                             variant={isSelected ? "default" : "outline"}
                             onClick={() => onHistoryEntrySelect(entry.id)}
-                            className="h-auto w-full cursor-pointer items-start justify-between px-3 py-3 pr-24 text-left"
+                            className={cn(
+                              "h-auto w-full cursor-pointer items-start justify-between px-3 py-3 pr-24 text-left",
+                              settings.theme === "dark" && isSelected && "text-[#2D293D] hover:text-[#2D293D]"
+                            )}
                           >
                             <div className="min-w-0 flex-1">
                               <div className="truncate text-sm font-medium">
@@ -310,7 +319,14 @@ export const SettingsSidebar = ({
                             </div>
                             {isSelected ? (
                               <div className="absolute right-2 top-2 flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1 rounded-full bg-background/70 px-2 py-1 text-[11px] font-medium text-foreground">
+                                <span
+                                  className={cn(
+                                    "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium",
+                                    settings.theme === "dark"
+                                      ? "bg-secondary/85 text-secondary-foreground"
+                                      : "bg-background/70 text-foreground"
+                                  )}
+                                >
                                   <Check className="h-3 w-3" />
                                   Selected
                                 </span>
@@ -370,7 +386,7 @@ export const SettingsSidebar = ({
                                     event.stopPropagation()
                                     handleDeleteIntent(entry)
                                   }}
-                                  className="h-8 w-8 cursor-pointer text-muted-foreground hover:text-destructive"
+                                  className="h-8 w-8 cursor-pointer text-muted-foreground hover:bg-accent/50 hover:text-foreground"
                                   aria-label={`Delete ${entry.title} from history`}
                                 >
                                   <Trash2 className="h-4 w-4" />
