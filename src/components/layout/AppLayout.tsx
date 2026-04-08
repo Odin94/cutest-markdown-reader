@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { LeftSidebar } from "./LeftSidebar"
 import { SettingsSidebar } from "./SettingsSidebar"
 import { ModeToggle } from "../mode/ModeToggle"
+import type { MarkdownHistoryEntry } from "@/hooks/useLocalStorage"
 
 type Mode = "write" | "read"
 
@@ -11,6 +12,10 @@ type AppLayoutProps = {
   mode: Mode
   onModeChange: (mode: Mode) => void
   markdown: string
+  historyEntries: MarkdownHistoryEntry[]
+  selectedHistoryEntryId: string
+  onHistoryEntrySelect: (id: string) => void
+  onHistoryEntryDelete: (id: string) => void
   onHeadingClick?: (id: string) => void
   currentHeadingId?: string
 }
@@ -20,6 +25,10 @@ export const AppLayout = ({
   mode,
   onModeChange,
   markdown,
+  historyEntries,
+  selectedHistoryEntryId,
+  onHistoryEntrySelect,
+  onHistoryEntryDelete,
   onHeadingClick,
   currentHeadingId,
 }: AppLayoutProps) => {
@@ -67,6 +76,10 @@ export const AppLayout = ({
       <SettingsSidebar
         isOpen={rightSidebarOpen}
         onToggle={() => setRightSidebarOpen(!rightSidebarOpen)}
+        historyEntries={historyEntries}
+        selectedHistoryEntryId={selectedHistoryEntryId}
+        onHistoryEntrySelect={onHistoryEntrySelect}
+        onHistoryEntryDelete={onHistoryEntryDelete}
       />
     </div>
   )

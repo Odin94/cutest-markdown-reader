@@ -10,7 +10,14 @@ type Mode = "write" | "read"
 
 const App = () => {
   const [mode, setMode] = useState<Mode>("read")
-  const [markdown, setMarkdown] = useLocalStorage()
+  const {
+    markdown,
+    setMarkdown,
+    historyEntries,
+    selectedHistoryEntryId,
+    selectHistoryEntry,
+    deleteHistoryEntry,
+  } = useLocalStorage()
   const [currentHeadingId, setCurrentHeadingId] = useState<string | undefined>()
   const headings = useMarkdownOutline(markdown)
 
@@ -72,6 +79,10 @@ const App = () => {
         mode={mode}
         onModeChange={setMode}
         markdown={markdown}
+        historyEntries={historyEntries}
+        selectedHistoryEntryId={selectedHistoryEntryId}
+        onHistoryEntrySelect={selectHistoryEntry}
+        onHistoryEntryDelete={deleteHistoryEntry}
         onHeadingClick={handleHeadingClick}
         currentHeadingId={currentHeadingId}
       >

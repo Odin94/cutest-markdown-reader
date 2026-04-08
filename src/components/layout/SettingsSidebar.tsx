@@ -1,15 +1,20 @@
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
+import type { MarkdownHistoryEntry } from "@/hooks/useLocalStorage"
 import { applyTheme, type Theme } from "@/lib/themes"
 import { cn } from "@/lib/utils"
 import { useSettings } from "@/stores/settingsStore"
 import { AnimatePresence, motion } from "framer-motion"
-import { AlignLeft, ChevronRight, ExternalLink, Palette, Settings, Type } from "lucide-react"
+import { AlignLeft, Check, ChevronRight, ExternalLink, History, Palette, Settings, Trash2, Type, X } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 
 type SettingsSidebarProps = {
   isOpen: boolean
   onToggle: () => void
+  historyEntries: MarkdownHistoryEntry[]
+  selectedHistoryEntryId: string
+  onHistoryEntrySelect: (id: string) => void
+  onHistoryEntryDelete: (id: string) => void
 }
 
 const themeOptions: { value: Theme; label: string; emoji: string }[] = [
@@ -26,11 +31,21 @@ const fontOptions: { value: "inter" | "georgia" | "jetbrains" | "system"; label:
   { value: "system", label: "System" },
 ]
 
-export const SettingsSidebar = ({ isOpen, onToggle }: SettingsSidebarProps) => {
+export const SettingsSidebar = ({
+  isOpen,
+  onToggle,
+  historyEntries,
+  selectedHistoryEntryId,
+  onHistoryEntrySelect,
+  onHistoryEntryDelete,
+}: SettingsSidebarProps) => {
   const { settings, updateTheme, updateFontSize, updateLineHeight, updateFontFamily } = useSettings()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [isScrolling, setIsScrolling] = useState(false)
+  const [pendingDeleteEntryId, setPendingDeleteEntryId] = useState<string | null>(null)
+  const [hoverSuppressedEntryId, setHoverSuppressedEntryId] = useState<string | null>(null)
   const scrollTimeoutRef = useRef<number>()
+  const hoverSuppressTimeoutRef = useRef<number>()
 
   useEffect(() => {
     const container = scrollContainerRef.current
@@ -52,12 +67,45 @@ export const SettingsSidebar = ({ isOpen, onToggle }: SettingsSidebarProps) => {
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
       }
+      if (hoverSuppressTimeoutRef.current) {
+        clearTimeout(hoverSuppressTimeoutRef.current)
+      }
     }
   }, [isOpen])
 
   const handleThemeChange = (theme: Theme) => {
     updateTheme(theme)
     applyTheme(theme)
+  }
+
+  const handleDeleteIntent = (entry: MarkdownHistoryEntry) => {
+    if (entry.id === selectedHistoryEntryId) {
+      return
+    }
+
+    setPendingDeleteEntryId(entry.id)
+    setHoverSuppressedEntryId(entry.id)
+    if (hoverSuppressTimeoutRef.current) {
+      clearTimeout(hoverSuppressTimeoutRef.current)
+    }
+    hoverSuppressTimeoutRef.current = window.setTimeout(() => {
+      setHoverSuppressedEntryId(null)
+    }, 180)
+  }
+
+  const handleDeleteAbort = () => {
+    setPendingDeleteEntryId(null)
+    setHoverSuppressedEntryId(null)
+  }
+
+  const handleDeleteConfirm = (entry: MarkdownHistoryEntry) => {
+    if (entry.id === selectedHistoryEntryId) {
+      return
+    }
+
+    onHistoryEntryDelete(entry.id)
+    setPendingDeleteEntryId(null)
+    setHoverSuppressedEntryId(null)
   }
 
   return (
@@ -190,6 +238,122 @@ export const SettingsSidebar = ({ isOpen, onToggle }: SettingsSidebarProps) => {
                     <span>2.5</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <History className="h-4 w-4" />
+                  Markdown History
+                </div>
+                <motion.div layout className="space-y-2">
+                  <AnimatePresence initial={false}>
+                    {historyEntries.map((entry, index) => {
+                      const isSelected = entry.id === selectedHistoryEntryId
+                      const isConfirmingDelete = entry.id === pendingDeleteEntryId
+                      const suppressHover = entry.id === hoverSuppressedEntryId
+
+                      return (
+                        <motion.div
+                          key={entry.id}
+                          layout
+                          initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: 24, scale: 0.96 }}
+                          transition={{
+                            layout: { type: "spring", stiffness: 380, damping: 32 },
+                            opacity: { duration: 0.18 },
+                            y: { type: "spring", stiffness: 420, damping: 30 },
+                          }}
+                          className="relative"
+                        >
+                          <Button
+                            variant={isSelected ? "default" : "outline"}
+                            onClick={() => onHistoryEntrySelect(entry.id)}
+                            className="h-auto w-full cursor-pointer items-start justify-between px-3 py-3 pr-24 text-left"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate text-sm font-medium">
+                                {entry.title}
+                              </div>
+                              <div className="mt-1 text-xs text-muted-foreground">
+                                {index === 0 ? "Current markdown" : "History entry"}
+                              </div>
+                            </div>
+                            {isSelected ? (
+                              <div className="absolute right-2 top-2 flex items-center gap-2">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-background/70 px-2 py-1 text-[11px] font-medium text-foreground">
+                                  <Check className="h-3 w-3" />
+                                  Selected
+                                </span>
+                              </div>
+                            ) : null}
+                          </Button>
+                          {!isSelected ? (
+                            <div className="absolute right-2 top-2 flex items-center gap-1">
+                              {isConfirmingDelete ? (
+                                <>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onMouseDown={(event) => event.preventDefault()}
+                                    onClick={(event) => {
+                                      event.stopPropagation()
+                                      handleDeleteConfirm(entry)
+                                    }}
+                                    className={cn(
+                                      "h-8 w-8 cursor-pointer text-muted-foreground",
+                                      suppressHover
+                                        ? "pointer-events-none"
+                                        : "hover:bg-emerald-500/10 hover:text-emerald-600"
+                                    )}
+                                    aria-label={`Confirm deleting ${entry.title} from history`}
+                                  >
+                                    <Check className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    onMouseDown={(event) => event.preventDefault()}
+                                    onClick={(event) => {
+                                      event.stopPropagation()
+                                      handleDeleteAbort()
+                                    }}
+                                    className={cn(
+                                      "h-8 w-8 cursor-pointer text-muted-foreground",
+                                      suppressHover
+                                        ? "pointer-events-none"
+                                        : "hover:bg-primary hover:text-primary-foreground"
+                                    )}
+                                    aria-label={`Cancel deleting ${entry.title} from history`}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </>
+                              ) : (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onMouseDown={(event) => event.preventDefault()}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    handleDeleteIntent(entry)
+                                  }}
+                                  className="h-8 w-8 cursor-pointer text-muted-foreground hover:text-destructive"
+                                  aria-label={`Delete ${entry.title} from history`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                          ) : null}
+                        </motion.div>
+                      )
+                    })}
+                  </AnimatePresence>
+                </motion.div>
               </div>
             </div>
             <div className="w-full p-4 border-t border-border flex justify-center items-center">
