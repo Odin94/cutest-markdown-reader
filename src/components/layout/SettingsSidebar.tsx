@@ -31,6 +31,34 @@ const fontOptions: { value: "inter" | "georgia" | "jetbrains" | "system"; label:
   { value: "system", label: "System" },
 ]
 
+const getHistoryPreview = (entry: MarkdownHistoryEntry) => {
+  const normalizedTitle = entry.title.trim().toLowerCase()
+  const lines = entry.content
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+
+  const previewLine = lines.find((line) => {
+    const cleanedLine = line
+      .replace(/^#{1,6}\s+/, "")
+      .replace(/[_*`~]+/g, "")
+      .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+      .trim()
+
+    return cleanedLine.length > 0 && cleanedLine.toLowerCase() !== normalizedTitle
+  })
+
+  if (!previewLine) {
+    return "No additional preview text"
+  }
+
+  return previewLine
+    .replace(/^#{1,6}\s+/, "")
+    .replace(/[_*`~]+/g, "")
+    .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+    .slice(0, 72)
+}
+
 export const SettingsSidebar = ({
   isOpen,
   onToggle,
@@ -247,10 +275,11 @@ export const SettingsSidebar = ({
                 </div>
                 <motion.div layout className="space-y-2">
                   <AnimatePresence initial={false}>
-                    {historyEntries.map((entry, index) => {
+                    {historyEntries.map((entry) => {
                       const isSelected = entry.id === selectedHistoryEntryId
                       const isConfirmingDelete = entry.id === pendingDeleteEntryId
                       const suppressHover = entry.id === hoverSuppressedEntryId
+                      const previewText = getHistoryPreview(entry)
 
                       return (
                         <motion.div
@@ -276,7 +305,7 @@ export const SettingsSidebar = ({
                                 {entry.title}
                               </div>
                               <div className="mt-1 text-xs text-muted-foreground">
-                                {index === 0 ? "Current markdown" : "History entry"}
+                                {previewText}
                               </div>
                             </div>
                             {isSelected ? (
