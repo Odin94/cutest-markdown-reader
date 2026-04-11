@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useDebounce } from "./useDebounce"
 
 const STORAGE_KEY = "cutest-markdown-history"
@@ -202,13 +202,11 @@ export const useLocalStorage = (): UseLocalStorageReturn => {
   const selectedHistoryEntryIdRef = useRef(selectedHistoryEntryId)
   const comparisonBaselineRef = useRef(initialCurrentEntry)
 
-  const persistableState = useDebounce(
-    {
-      historyEntries,
-      selectedHistoryEntryId,
-    },
-    PERSIST_DEBOUNCE_MS
+  const persistableData = useMemo(
+    () => ({ historyEntries, selectedHistoryEntryId }),
+    [historyEntries, selectedHistoryEntryId]
   )
+  const persistableState = useDebounce(persistableData, PERSIST_DEBOUNCE_MS)
   const debouncedMarkdown = useDebounce(markdown, COMPARE_DEBOUNCE_MS)
 
   const syncState = useCallback((nextHistoryEntries: MarkdownHistoryEntry[], nextSelectedHistoryEntryId: string) => {

@@ -148,6 +148,91 @@ const CodeBlock = ({
   )
 }
 
+const remarkPlugins = [remarkGfm]
+
+const extractText = (node: React.ReactNode): string => {
+  if (typeof node === "string") {
+    return node.replace(/^`+|`+$/g, "")
+  }
+  if (typeof node === "number") {
+    return String(node)
+  }
+  if (Array.isArray(node)) {
+    return node.map(extractText).join("")
+  }
+  if (node && typeof node === "object" && "props" in node) {
+    return extractText((node as { props?: { children?: React.ReactNode } }).props?.children)
+  }
+  return String(node).replace(/^`+|`+$/g, "")
+}
+
+const makeHeadingId = (node: { position?: { start: { line: number } } } | undefined, children: React.ReactNode) => {
+  const lineNumber = node?.position?.start.line ?? 0
+  return `heading-${lineNumber}-${children
+    ?.toString()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")}`
+}
+
+const MarkdownCode = (props: React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement> & { node?: unknown; inline?: boolean }) => {
+  const { node: _node, inline, className, children, ...rest } = props
+
+  const codeString = String(children).replace(/\n$/, "")
+  const hasLanguage = className && /language-/.test(className)
+  const isMultiline = codeString.includes("\n")
+
+  if (inline || (!hasLanguage && !isMultiline)) {
+    const textContent = extractText(children)
+    return (
+      <code
+        className="text-primary bg-surface px-1 py-0.5 rounded text-sm font-mono"
+        {...rest}
+      >
+        {textContent}
+      </code>
+    )
+  }
+  const match = /language-(\w+)/.exec(className || "")
+  const language = match ? match[1] : ""
+  return (
+    <CodeBlock key={`code-${language}-${codeString.slice(0, 20)}`} language={language}>
+      {children}
+    </CodeBlock>
+  )
+}
+
+const MarkdownPre = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>
+
+const MarkdownH1 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
+  <h1 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+)
+const MarkdownH2 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
+  <h2 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+)
+const MarkdownH3 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
+  <h3 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+)
+const MarkdownH4 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
+  <h4 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+)
+const MarkdownH5 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
+  <h5 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+)
+const MarkdownH6 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
+  <h6 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+)
+
+const markdownComponents = {
+  code: MarkdownCode,
+  pre: MarkdownPre,
+  h1: MarkdownH1,
+  h2: MarkdownH2,
+  h3: MarkdownH3,
+  h4: MarkdownH4,
+  h5: MarkdownH5,
+  h6: MarkdownH6,
+}
+
 export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
   const { settings } = useSettings()
   const isDark = settings.theme === "dark"
@@ -180,118 +265,8 @@ export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
       }}
     >
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        components={{
-          code: (props) => {
-            const { node: _node, inline, className, children, ...rest } = props as {
-              node?: unknown
-              inline?: boolean
-              className?: string
-              children?: React.ReactNode
-            }
-            
-            const codeString = String(children).replace(/\n$/, "")
-            const hasLanguage = className && /language-/.test(className)
-            const isMultiline = codeString.includes("\n")
-            
-            if (inline || (!hasLanguage && !isMultiline)) {
-              const extractText = (node: React.ReactNode): string => {
-                if (typeof node === "string") {
-                  return node.replace(/^`+|`+$/g, "")
-                }
-                if (typeof node === "number") {
-                  return String(node)
-                }
-                if (Array.isArray(node)) {
-                  return node.map(extractText).join("")
-                }
-                if (node && typeof node === "object" && "props" in node) {
-                  return extractText((node as { props?: { children?: React.ReactNode } }).props?.children)
-                }
-                return String(node).replace(/^`+|`+$/g, "")
-              }
-              const textContent = extractText(children)
-              return (
-                <code
-                  className="text-primary bg-surface px-1 py-0.5 rounded text-sm font-mono"
-                  {...rest}
-                >
-                  {textContent}
-                </code>
-              )
-            }
-            const match = /language-(\w+)/.exec(className || "")
-            const language = match ? match[1] : ""
-            return (
-              <CodeBlock key={`code-${language}-${codeString.slice(0, 20)}`} language={language}>
-                {children}
-              </CodeBlock>
-            )
-          },
-          pre: ({ children }) => {
-            return <div>{children}</div>
-          },
-          h1: ({ node, ...props }) => {
-            const lineNumber = node?.position?.start.line ?? 0
-            const id = `heading-${lineNumber}-${props.children
-              ?.toString()
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")}`
-            return (
-              <h1 id={id} className="scroll-mt-20" {...props} />
-            )
-          },
-          h2: ({ node, ...props }) => {
-            const lineNumber = node?.position?.start.line ?? 0
-            const id = `heading-${lineNumber}-${props.children
-              ?.toString()
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")}`
-            return (
-              <h2 id={id} className="scroll-mt-20" {...props} />
-            )
-          },
-          h3: ({ node, ...props }) => {
-            const lineNumber = node?.position?.start.line ?? 0
-            const id = `heading-${lineNumber}-${props.children
-              ?.toString()
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")}`
-            return (
-              <h3 id={id} className="scroll-mt-20" {...props} />
-            )
-          },
-          h4: ({ node, ...props }) => {
-            const lineNumber = node?.position?.start.line ?? 0
-            const id = `heading-${lineNumber}-${props.children
-              ?.toString()
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")}`
-            return (
-              <h4 id={id} className="scroll-mt-20" {...props} />
-            )
-          },
-          h5: ({ node, ...props }) => {
-            const lineNumber = node?.position?.start.line ?? 0
-            const id = `heading-${lineNumber}-${props.children
-              ?.toString()
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")}`
-            return (
-              <h5 id={id} className="scroll-mt-20" {...props} />
-            )
-          },
-          h6: ({ node, ...props }) => {
-            const lineNumber = node?.position?.start.line ?? 0
-            const id = `heading-${lineNumber}-${props.children
-              ?.toString()
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, "-")}`
-            return (
-              <h6 id={id} className="scroll-mt-20" {...props} />
-            )
-          },
-        }}
+        remarkPlugins={remarkPlugins}
+        components={markdownComponents}
       >
         {content}
       </ReactMarkdown>
