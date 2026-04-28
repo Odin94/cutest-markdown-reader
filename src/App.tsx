@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react"
-import { SettingsProvider } from "./stores/settingsStore"
-import { AppLayout } from "./components/layout/AppLayout"
-import { WriteMode } from "./components/editor/WriteMode"
-import { ReadMode } from "./components/reader/ReadMode"
-import { useLocalStorage } from "./hooks/useLocalStorage"
-import { useMarkdownOutline } from "./hooks/useMarkdownOutline"
+import { useState, useEffect } from 'react'
+import { SettingsProvider } from './stores/settingsStore'
+import { AppLayout } from './components/layout/AppLayout'
+import { WriteMode } from './components/editor/WriteMode'
+import { ReadMode } from './components/reader/ReadMode'
+import { useLocalStorage } from './hooks/useLocalStorage'
+import { useMarkdownOutline } from './hooks/useMarkdownOutline'
 
-type Mode = "write" | "read"
+type Mode = 'write' | 'read'
 
 const App = () => {
-  const [mode, setMode] = useState<Mode>("read")
+  const [mode, setMode] = useState<Mode>('read')
   const {
     markdown,
     setMarkdown,
@@ -22,11 +22,11 @@ const App = () => {
   const headings = useMarkdownOutline(markdown)
 
   useEffect(() => {
-    const scrollContainer = document.getElementById("reader-scroll")
+    const scrollContainer = document.getElementById('reader-scroll')
     if (!scrollContainer) return
 
     const handleScroll = () => {
-      if (mode !== "read") return
+      if (mode !== 'read') return
 
       const headingElements = headings
         .map((h) => document.getElementById(h.id))
@@ -47,30 +47,30 @@ const App = () => {
       setCurrentHeadingId(undefined)
     }
 
-    scrollContainer.addEventListener("scroll", handleScroll)
+    scrollContainer.addEventListener('scroll', handleScroll)
     handleScroll()
 
-    return () => scrollContainer.removeEventListener("scroll", handleScroll)
+    return () => scrollContainer.removeEventListener('scroll', handleScroll)
   }, [mode, headings])
 
   const handleHeadingClick = (id: string) => {
     setCurrentHeadingId(id)
     const element = document.getElementById(id)
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" })
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   }
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "e") {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
         e.preventDefault()
-        setMode((prev) => (prev === "write" ? "read" : "write"))
+        setMode((prev) => (prev === 'write' ? 'read' : 'write'))
       }
     }
 
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
   }, [])
 
   return (
@@ -86,7 +86,7 @@ const App = () => {
         onHeadingClick={handleHeadingClick}
         currentHeadingId={currentHeadingId}
       >
-        {mode === "write" ? (
+        {mode === 'write' ? (
           <WriteMode markdown={markdown} onMarkdownChange={setMarkdown} />
         ) : (
           <ReadMode markdown={markdown} />

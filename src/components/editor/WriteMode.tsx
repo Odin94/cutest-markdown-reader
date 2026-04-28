@@ -1,5 +1,5 @@
-import { motion } from "framer-motion"
-import { MarkdownEditor } from "./MarkdownEditor"
+import { motion } from 'framer-motion'
+import { MarkdownEditor } from './MarkdownEditor'
 
 type WriteModeProps = {
   markdown: string

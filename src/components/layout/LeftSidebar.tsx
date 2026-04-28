@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button"
-import { useMarkdownOutline, type Heading } from "@/hooks/useMarkdownOutline"
-import { cn, getReadingTimeMinutes } from "@/lib/utils"
-import { AnimatePresence, motion } from "framer-motion"
-import { ChevronLeft, List } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Button } from '@/components/ui/button'
+import { useMarkdownOutline, type Heading } from '@/hooks/useMarkdownOutline'
+import { cn, getReadingTimeMinutes } from '@/lib/utils'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ChevronLeft, List } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 type LeftSidebarProps = {
   isOpen: boolean
@@ -39,9 +39,9 @@ export const LeftSidebar = ({
       }, 1000)
     }
 
-    container.addEventListener("scroll", handleScroll)
+    container.addEventListener('scroll', handleScroll)
     return () => {
-      container.removeEventListener("scroll", handleScroll)
+      container.removeEventListener('scroll', handleScroll)
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
       }
@@ -59,8 +59,8 @@ export const LeftSidebar = ({
         whileHover={{ x: 4 }}
         whileTap={{ scale: 0.98 }}
         className={cn(
-          "w-full text-left rounded-md transition-colors hover:bg-accent/50 leading-relaxed",
-          isActive ? "bg-accent/30 text-primary font-medium" : "text-foreground/80"
+          'w-full text-left rounded-md transition-colors hover:bg-accent/50 leading-relaxed',
+          isActive ? 'bg-accent/30 text-primary font-medium' : 'text-foreground/80',
         )}
         style={{ paddingLeft: `${1.5 + indent * 1.5}rem` }}
       >
@@ -78,16 +78,11 @@ export const LeftSidebar = ({
             initial={{ x: -300, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed left-0 top-0 h-full w-64 bg-surface/95 backdrop-blur-md border-r border-border shadow-xl z-40 flex flex-col"
           >
             <div className="flex items-center justify-start p-2 border-b border-border">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onToggle}
-                className="h-8 w-8"
-              >
+              <Button variant="ghost" size="icon" onClick={onToggle} className="h-8 w-8">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <p className="text-xs text-muted-foreground px-2">
@@ -97,19 +92,17 @@ export const LeftSidebar = ({
             <div
               ref={scrollContainerRef}
               className={cn(
-                "flex-1 overflow-y-auto px-2 outline-scrollbar",
-                isScrolling && "scrolling"
+                'flex-1 overflow-y-auto px-2 outline-scrollbar',
+                isScrolling && 'scrolling',
               )}
-              style={{ scrollbarGutter: "stable" }}
+              style={{ scrollbarGutter: 'stable' }}
             >
               {headings.length === 0 ? (
                 <p className="text-sm text-muted-foreground px-4 py-8 text-center leading-relaxed">
                   No headings found. Add some headings to your markdown to see the outline here.
                 </p>
               ) : (
-                <div className="space-y-2">
-                  {headings.map((heading) => renderHeading(heading))}
-                </div>
+                <div className="space-y-2">{headings.map((heading) => renderHeading(heading))}</div>
               )}
             </div>
           </motion.aside>
@@ -120,7 +113,7 @@ export const LeftSidebar = ({
           initial={{ x: -300, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: -300, opacity: 0 }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           onClick={onToggle}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

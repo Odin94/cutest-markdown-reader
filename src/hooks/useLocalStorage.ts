@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useDebounce } from "./useDebounce"
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useDebounce } from './useDebounce'
 
-const STORAGE_KEY = "cutest-markdown-history"
-const LEGACY_STORAGE_KEY = "cutest-markdown-content"
+const STORAGE_KEY = 'cutest-markdown-history'
+const LEGACY_STORAGE_KEY = 'cutest-markdown-content'
 const MAX_HISTORY_ENTRIES = 5
 const COMPARE_DEBOUNCE_MS = 2500
 const PERSIST_DEBOUNCE_MS = 500
@@ -28,7 +28,7 @@ Start typing or paste your markdown content here. Your content will be automatic
 - Switch between write and read modes for the best experience
 - Customize your reading experience in the settings panel
 
-Enjoy reading! ðŸ“šâœ¨
+Enjoy reading!
 `
 
 export type MarkdownHistoryEntry = {
@@ -58,27 +58,30 @@ const createId = () => {
 }
 
 const getFirstMeaningfulLine = (content: string) => {
-  return content
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .find((line) => line.length > 0) ?? ""
+  return (
+    content
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .find((line) => line.length > 0) ?? ''
+  )
 }
 
 const stripMarkdownDecorators = (line: string) => {
   return line
-    .replace(/^#{1,6}\s+/, "")
-    .replace(/^[>\-\*\+\d.)\s]+/, "")
-    .replace(/[_*`~]+/g, "")
-    .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+    .replace(/^#{1,6}\s+/, '')
+    .replace(/^[>\-*+\d.)\s]+/, '')
+    .replace(/[_*`~]+/g, '')
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
     .trim()
 }
 
 const getHistoryTitle = (content: string) => {
   const headingMatch = content.match(/^#{1,6}\s+(.+)$/m)
-  const rawTitle = headingMatch?.[1]?.trim() || stripMarkdownDecorators(getFirstMeaningfulLine(content))
+  const rawTitle =
+    headingMatch?.[1]?.trim() || stripMarkdownDecorators(getFirstMeaningfulLine(content))
 
   if (!rawTitle) {
-    return "Untitled markdown"
+    return 'Untitled markdown'
   }
 
   return rawTitle.slice(0, 80)
@@ -98,13 +101,10 @@ const moveEntryToFront = (entries: MarkdownHistoryEntry[], id: string) => {
     return trimEntries(entries)
   }
 
-  return trimEntries([
-    selectedEntry,
-    ...entries.filter((entry) => entry.id !== id),
-  ])
+  return trimEntries([selectedEntry, ...entries.filter((entry) => entry.id !== id)])
 }
 
-const normalizeContent = (content: string) => content.replace(/\r\n/g, "\n")
+const normalizeContent = (content: string) => content.replace(/\r\n/g, '\n')
 
 const getChangeRatio = (previousContent: string, nextContent: string) => {
   const previous = normalizeContent(previousContent)
@@ -129,13 +129,17 @@ const getChangeRatio = (previousContent: string, nextContent: string) => {
     suffixLength += 1
   }
 
-  const changedCharacters = previous.length + next.length - (prefixLength * 2) - (suffixLength * 2)
+  const changedCharacters = previous.length + next.length - prefixLength * 2 - suffixLength * 2
   return changedCharacters / Math.max(previous.length, next.length, 1)
 }
 
 const isVeryBigChange = (previousContent: string, nextContent: string) => {
-  const changedCharacters = Math.abs(previousContent.length - nextContent.length)
-    + Math.ceil(Math.max(previousContent.length, nextContent.length) * getChangeRatio(previousContent, nextContent))
+  const changedCharacters =
+    Math.abs(previousContent.length - nextContent.length) +
+    Math.ceil(
+      Math.max(previousContent.length, nextContent.length) *
+        getChangeRatio(previousContent, nextContent),
+    )
   const changeRatio = getChangeRatio(previousContent, nextContent)
 
   return changedCharacters >= 400 && changeRatio >= 0.5
@@ -148,18 +152,20 @@ const loadStoredHistory = (): StoredHistory => {
     const storedHistory = window.localStorage.getItem(STORAGE_KEY)
     if (storedHistory) {
       const parsed = JSON.parse(storedHistory) as Partial<StoredHistory>
-      if (Array.isArray(parsed.entries) && typeof parsed.selectedHistoryEntryId === "string") {
-        const entries = parsed.entries
-          .filter((entry): entry is MarkdownHistoryEntry => (
-            typeof entry?.id === "string"
-            && typeof entry?.content === "string"
-            && typeof entry?.title === "string"
-            && typeof entry?.updatedAt === "number"
-          ))
+      if (Array.isArray(parsed.entries) && typeof parsed.selectedHistoryEntryId === 'string') {
+        const entries = parsed.entries.filter(
+          (entry): entry is MarkdownHistoryEntry =>
+            typeof entry?.id === 'string' &&
+            typeof entry?.content === 'string' &&
+            typeof entry?.title === 'string' &&
+            typeof entry?.updatedAt === 'number',
+        )
 
         if (entries.length > 0) {
           const selectedExists = entries.some((entry) => entry.id === parsed.selectedHistoryEntryId)
-          const nextSelectedHistoryEntryId = selectedExists ? parsed.selectedHistoryEntryId : entries[0].id
+          const nextSelectedHistoryEntryId = selectedExists
+            ? parsed.selectedHistoryEntryId
+            : entries[0].id
 
           return {
             entries: moveEntryToFront(entries, nextSelectedHistoryEntryId),
@@ -178,7 +184,7 @@ const loadStoredHistory = (): StoredHistory => {
       }
     }
   } catch (error) {
-    console.error("Error reading markdown history from localStorage:", error)
+    console.error('Error reading markdown history from localStorage:', error)
   }
 
   return {
@@ -189,9 +195,9 @@ const loadStoredHistory = (): StoredHistory => {
 
 export const useLocalStorage = (): UseLocalStorageReturn => {
   const initialState = useRef(loadStoredHistory()).current
-  const initialCurrentEntry = initialState.entries.find(
-    (entry) => entry.id === initialState.selectedHistoryEntryId
-  ) ?? initialState.entries[0]
+  const initialCurrentEntry =
+    initialState.entries.find((entry) => entry.id === initialState.selectedHistoryEntryId) ??
+    initialState.entries[0]
 
   const [markdown, setMarkdownState] = useState(initialCurrentEntry.content)
   const [historyEntries, setHistoryEntries] = useState(initialState.entries)
@@ -204,57 +210,64 @@ export const useLocalStorage = (): UseLocalStorageReturn => {
 
   const persistableData = useMemo(
     () => ({ historyEntries, selectedHistoryEntryId }),
-    [historyEntries, selectedHistoryEntryId]
+    [historyEntries, selectedHistoryEntryId],
   )
   const persistableState = useDebounce(persistableData, PERSIST_DEBOUNCE_MS)
   const debouncedMarkdown = useDebounce(markdown, COMPARE_DEBOUNCE_MS)
 
-  const syncState = useCallback((nextHistoryEntries: MarkdownHistoryEntry[], nextSelectedHistoryEntryId: string) => {
-    historyEntriesRef.current = nextHistoryEntries
-    selectedHistoryEntryIdRef.current = nextSelectedHistoryEntryId
-    setHistoryEntries(nextHistoryEntries)
-    setSelectedHistoryEntryId(nextSelectedHistoryEntryId)
-  }, [])
+  const syncState = useCallback(
+    (nextHistoryEntries: MarkdownHistoryEntry[], nextSelectedHistoryEntryId: string) => {
+      historyEntriesRef.current = nextHistoryEntries
+      selectedHistoryEntryIdRef.current = nextSelectedHistoryEntryId
+      setHistoryEntries(nextHistoryEntries)
+      setSelectedHistoryEntryId(nextSelectedHistoryEntryId)
+    },
+    [],
+  )
 
-  const commitDraft = useCallback((content: string) => {
-    const baselineEntry = comparisonBaselineRef.current
-    if (baselineEntry.content === content) {
-      return
-    }
+  const commitDraft = useCallback(
+    (content: string) => {
+      const baselineEntry = comparisonBaselineRef.current
+      if (baselineEntry.content === content) {
+        return
+      }
 
-    if (isVeryBigChange(baselineEntry.content, content)) {
-      const nextEntry = createEntry(content)
-      const restoredBaselineEntry = createEntry(baselineEntry.content, baselineEntry.id)
-      restoredBaselineEntry.updatedAt = baselineEntry.updatedAt
+      if (isVeryBigChange(baselineEntry.content, content)) {
+        const nextEntry = createEntry(content)
+        const restoredBaselineEntry = createEntry(baselineEntry.content, baselineEntry.id)
+        restoredBaselineEntry.updatedAt = baselineEntry.updatedAt
 
+        const nextHistoryEntries = trimEntries([
+          nextEntry,
+          restoredBaselineEntry,
+          ...historyEntriesRef.current.filter((entry) => entry.id !== baselineEntry.id),
+        ])
+
+        comparisonBaselineRef.current = nextEntry
+        syncState(nextHistoryEntries, nextEntry.id)
+        return
+      }
+
+      const updatedEntry = createEntry(content, baselineEntry.id)
       const nextHistoryEntries = trimEntries([
-        nextEntry,
-        restoredBaselineEntry,
+        updatedEntry,
         ...historyEntriesRef.current.filter((entry) => entry.id !== baselineEntry.id),
       ])
 
-      comparisonBaselineRef.current = nextEntry
-      syncState(nextHistoryEntries, nextEntry.id)
-      return
-    }
-
-    const updatedEntry = createEntry(content, baselineEntry.id)
-    const nextHistoryEntries = trimEntries([
-      updatedEntry,
-      ...historyEntriesRef.current.filter((entry) => entry.id !== baselineEntry.id),
-    ])
-
-    comparisonBaselineRef.current = updatedEntry
-    syncState(nextHistoryEntries, updatedEntry.id)
-  }, [syncState])
+      comparisonBaselineRef.current = updatedEntry
+      syncState(nextHistoryEntries, updatedEntry.id)
+    },
+    [syncState],
+  )
 
   const setMarkdown = useCallback((value: string) => {
     markdownRef.current = value
     setMarkdownState(value)
 
     const currentEntryId = selectedHistoryEntryIdRef.current
-    const currentEntry = historyEntriesRef.current.find((entry) => entry.id === currentEntryId)
-      ?? comparisonBaselineRef.current
+    const currentEntry =
+      historyEntriesRef.current.find((entry) => entry.id === currentEntryId) ??
+      comparisonBaselineRef.current
     const previewEntry: MarkdownHistoryEntry = {
       ...currentEntry,
       title: getHistoryTitle(value),
@@ -271,37 +284,43 @@ export const useLocalStorage = (): UseLocalStorageReturn => {
     setHistoryEntries(nextHistoryEntries)
   }, [])
 
-  const selectHistoryEntry = useCallback((id: string) => {
-    commitDraft(markdownRef.current)
+  const selectHistoryEntry = useCallback(
+    (id: string) => {
+      commitDraft(markdownRef.current)
 
-    const selectedEntry = historyEntriesRef.current.find((entry) => entry.id === id)
-    if (!selectedEntry) {
-      return
-    }
+      const selectedEntry = historyEntriesRef.current.find((entry) => entry.id === id)
+      if (!selectedEntry) {
+        return
+      }
 
-    const nextHistoryEntries = trimEntries([
-      selectedEntry,
-      ...historyEntriesRef.current.filter((entry) => entry.id !== id),
-    ])
+      const nextHistoryEntries = trimEntries([
+        selectedEntry,
+        ...historyEntriesRef.current.filter((entry) => entry.id !== id),
+      ])
 
-    comparisonBaselineRef.current = selectedEntry
-    markdownRef.current = selectedEntry.content
-    setMarkdownState(selectedEntry.content)
-    syncState(nextHistoryEntries, selectedEntry.id)
-  }, [commitDraft, syncState])
+      comparisonBaselineRef.current = selectedEntry
+      markdownRef.current = selectedEntry.content
+      setMarkdownState(selectedEntry.content)
+      syncState(nextHistoryEntries, selectedEntry.id)
+    },
+    [commitDraft, syncState],
+  )
 
-  const deleteHistoryEntry = useCallback((id: string) => {
-    if (id === selectedHistoryEntryIdRef.current) {
-      return
-    }
+  const deleteHistoryEntry = useCallback(
+    (id: string) => {
+      if (id === selectedHistoryEntryIdRef.current) {
+        return
+      }
 
-    const nextHistoryEntries = historyEntriesRef.current.filter((entry) => entry.id !== id)
-    if (nextHistoryEntries.length === historyEntriesRef.current.length) {
-      return
-    }
+      const nextHistoryEntries = historyEntriesRef.current.filter((entry) => entry.id !== id)
+      if (nextHistoryEntries.length === historyEntriesRef.current.length) {
+        return
+      }
 
-    syncState(nextHistoryEntries, selectedHistoryEntryIdRef.current)
-  }, [syncState])
+      syncState(nextHistoryEntries, selectedHistoryEntryIdRef.current)
+    },
+    [syncState],
+  )
 
   useEffect(() => {
     markdownRef.current = markdown
@@ -318,10 +337,10 @@ export const useLocalStorage = (): UseLocalStorageReturn => {
         JSON.stringify({
           entries: persistableState.historyEntries,
           selectedHistoryEntryId: persistableState.selectedHistoryEntryId,
-        } satisfies StoredHistory)
+        } satisfies StoredHistory),
       )
     } catch (error) {
-      console.error("Error writing markdown history to localStorage:", error)
+      console.error('Error writing markdown history to localStorage:', error)
     }
   }, [persistableState])
 

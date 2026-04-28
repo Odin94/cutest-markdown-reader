@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { LeftSidebar } from "./LeftSidebar"
-import { SettingsSidebar } from "./SettingsSidebar"
-import { ModeToggle } from "../mode/ModeToggle"
-import type { MarkdownHistoryEntry } from "@/hooks/useLocalStorage"
+import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { LeftSidebar } from './LeftSidebar'
+import { SettingsSidebar } from './SettingsSidebar'
+import { ModeToggle } from '../mode/ModeToggle'
+import type { MarkdownHistoryEntry } from '@/hooks/useLocalStorage'
 
-type Mode = "write" | "read"
+type Mode = 'write' | 'read'
 
 type AppLayoutProps = {
   children: React.ReactNode
@@ -44,7 +44,7 @@ export const AppLayout = ({
     const fadeDistance = 120
 
     const updateModeToggleOpacity = () => {
-      if (mode !== "read") {
+      if (mode !== 'read') {
         setModeToggleOpacity(1)
         return
       }
@@ -53,29 +53,25 @@ export const AppLayout = ({
       setModeToggleOpacity(nextOpacity)
     }
 
-    scrollContainer.addEventListener("scroll", updateModeToggleOpacity)
+    scrollContainer.addEventListener('scroll', updateModeToggleOpacity)
     updateModeToggleOpacity()
 
-    return () => scrollContainer.removeEventListener("scroll", updateModeToggleOpacity)
+    return () => scrollContainer.removeEventListener('scroll', updateModeToggleOpacity)
   }, [mode])
 
   const handleHeadingClick = (id: string) => {
     onHeadingClick?.(id)
-    if (mode === "read") {
+    if (mode === 'read') {
       const element = document.getElementById(id)
       if (element) {
-        element.scrollIntoView({ behavior: "smooth", block: "start" })
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
     }
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <ModeToggle
-        mode={mode}
-        onModeChange={onModeChange}
-        opacity={modeToggleOpacity}
-      />
+      <ModeToggle mode={mode} onModeChange={onModeChange} opacity={modeToggleOpacity} />
 
       <LeftSidebar
         isOpen={leftSidebarOpen}
@@ -89,7 +85,7 @@ export const AppLayout = ({
         id="reader-scroll"
         ref={scrollContainerRef}
         className="reader-scrollbar fixed inset-0 overflow-y-auto z-30"
-        style={{ paddingTop: "100px" }}
+        style={{ paddingTop: '100px' }}
       >
         <div className="max-w-4xl mx-auto px-12 py-12">
           <AnimatePresence mode="wait">

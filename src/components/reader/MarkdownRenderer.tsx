@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react"
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
-import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism"
-import mermaid from "mermaid"
-import { Copy, Check } from "lucide-react"
-import { useSettings } from "@/stores/settingsStore"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import mermaid from 'mermaid'
+import { Copy, Check } from 'lucide-react'
+import { useSettings } from '@/stores/settingsStore'
+import { cn } from '@/lib/utils'
 
 type MarkdownRendererProps = {
   content: string
@@ -14,15 +14,11 @@ type MarkdownRendererProps = {
 
 let mermaidInitialized = false
 
-const MermaidDiagram = ({ 
-  code 
-}: { 
-  code: string 
-}) => {
-  const [svg, setSvg] = useState<string>("")
+const MermaidDiagram = ({ code }: { code: string }) => {
+  const [svg, setSvg] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
   const { settings } = useSettings()
-  const isDark = settings.theme === "dark"
+  const isDark = settings.theme === 'dark'
 
   useEffect(() => {
     const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`
@@ -31,20 +27,20 @@ const MermaidDiagram = ({
     if (!mermaidInitialized) {
       mermaid.initialize({
         startOnLoad: false,
-        theme: isDark ? "dark" : "default",
-        securityLevel: "loose",
+        theme: isDark ? 'dark' : 'default',
+        securityLevel: 'loose',
       })
       mermaidInitialized = true
     } else {
       mermaid.initialize({
         startOnLoad: false,
-        theme: isDark ? "dark" : "default",
-        securityLevel: "loose",
+        theme: isDark ? 'dark' : 'default',
+        securityLevel: 'loose',
       })
     }
 
     setError(null)
-    setSvg("")
+    setSvg('')
 
     mermaid
       .render(id, code)
@@ -56,8 +52,8 @@ const MermaidDiagram = ({
       })
       .catch((err) => {
         if (!cancelled) {
-          setError(err.message || "Failed to render diagram")
-          setSvg("")
+          setError(err.message || 'Failed to render diagram')
+          setSvg('')
         }
       })
 
@@ -84,7 +80,7 @@ const MermaidDiagram = ({
   }
 
   return (
-    <div 
+    <div
       key={`mermaid-${code.slice(0, 20)}`}
       className="my-4 flex justify-center bg-surface rounded-md p-4 overflow-x-auto"
     >
@@ -93,19 +89,13 @@ const MermaidDiagram = ({
   )
 }
 
-const CodeBlock = ({ 
-  language, 
-  children 
-}: { 
-  language?: string
-  children?: React.ReactNode 
-}) => {
+const CodeBlock = ({ language, children }: { language?: string; children?: React.ReactNode }) => {
   const [copied, setCopied] = useState(false)
-  const codeString = String(children).replace(/\n$/, "")
+  const codeString = String(children).replace(/\n$/, '')
   const { settings } = useSettings()
-  const isDark = settings.theme === "dark"
+  const isDark = settings.theme === 'dark'
 
-  if (language === "mermaid") {
+  if (language === 'mermaid') {
     return <MermaidDiagram code={codeString} />
   }
 
@@ -130,15 +120,15 @@ const CodeBlock = ({
         )}
       </button>
       <SyntaxHighlighter
-        language={language || "text"}
+        language={language || 'text'}
         style={isDark ? oneDark : oneLight}
         customStyle={{
           margin: 0,
-          borderRadius: "0.5rem",
+          borderRadius: '0.5rem',
           fontSize: `${settings.fontSize * 0.9}px`,
           lineHeight: `${settings.lineHeight}`,
-          padding: "1rem",
-          background: isDark ? "#2D2D2D" : "#FAF7F2",
+          padding: '1rem',
+          background: isDark ? '#2D2D2D' : '#FAF7F2',
         }}
         PreTag="div"
       >
@@ -151,49 +141,52 @@ const CodeBlock = ({
 const remarkPlugins = [remarkGfm]
 
 const extractText = (node: React.ReactNode): string => {
-  if (typeof node === "string") {
-    return node.replace(/^`+|`+$/g, "")
+  if (typeof node === 'string') {
+    return node.replace(/^`+|`+$/g, '')
   }
-  if (typeof node === "number") {
+  if (typeof node === 'number') {
     return String(node)
   }
   if (Array.isArray(node)) {
-    return node.map(extractText).join("")
+    return node.map(extractText).join('')
   }
-  if (node && typeof node === "object" && "props" in node) {
+  if (node && typeof node === 'object' && 'props' in node) {
     return extractText((node as { props?: { children?: React.ReactNode } }).props?.children)
   }
-  return String(node).replace(/^`+|`+$/g, "")
+  return String(node).replace(/^`+|`+$/g, '')
 }
 
-const makeHeadingId = (node: { position?: { start: { line: number } } } | undefined, children: React.ReactNode) => {
+const makeHeadingId = (
+  node: { position?: { start: { line: number } } } | undefined,
+  children: React.ReactNode,
+) => {
   const lineNumber = node?.position?.start.line ?? 0
   return `heading-${lineNumber}-${children
     ?.toString()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")}`
+    .replace(/[^a-z0-9]+/g, '-')}`
 }
 
-const MarkdownCode = (props: React.ClassAttributes<HTMLElement> & React.HTMLAttributes<HTMLElement> & { node?: unknown; inline?: boolean }) => {
+const MarkdownCode = (
+  props: React.ClassAttributes<HTMLElement> &
+    React.HTMLAttributes<HTMLElement> & { node?: unknown; inline?: boolean },
+) => {
   const { node: _node, inline, className, children, ...rest } = props
 
-  const codeString = String(children).replace(/\n$/, "")
+  const codeString = String(children).replace(/\n$/, '')
   const hasLanguage = className && /language-/.test(className)
-  const isMultiline = codeString.includes("\n")
+  const isMultiline = codeString.includes('\n')
 
   if (inline || (!hasLanguage && !isMultiline)) {
     const textContent = extractText(children)
     return (
-      <code
-        className="text-primary bg-surface px-1 py-0.5 rounded text-sm font-mono"
-        {...rest}
-      >
+      <code className="text-primary bg-surface px-1 py-0.5 rounded text-sm font-mono" {...rest}>
         {textContent}
       </code>
     )
   }
-  const match = /language-(\w+)/.exec(className || "")
-  const language = match ? match[1] : ""
+  const match = /language-(\w+)/.exec(className || '')
+  const language = match ? match[1] : ''
   return (
     <CodeBlock key={`code-${language}-${codeString.slice(0, 20)}`} language={language}>
       {children}
@@ -203,24 +196,48 @@ const MarkdownCode = (props: React.ClassAttributes<HTMLElement> & React.HTMLAttr
 
 const MarkdownPre = ({ children }: { children?: React.ReactNode }) => <div>{children}</div>
 
-const MarkdownH1 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
-  <h1 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
-)
-const MarkdownH2 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
-  <h2 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
-)
-const MarkdownH3 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
-  <h3 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
-)
-const MarkdownH4 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
-  <h4 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
-)
-const MarkdownH5 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
-  <h5 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
-)
-const MarkdownH6 = ({ node, ...props }: { node?: { position?: { start: { line: number } } }; children?: React.ReactNode }) => (
-  <h6 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
-)
+const MarkdownH1 = ({
+  node,
+  ...props
+}: {
+  node?: { position?: { start: { line: number } } }
+  children?: React.ReactNode
+}) => <h1 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+const MarkdownH2 = ({
+  node,
+  ...props
+}: {
+  node?: { position?: { start: { line: number } } }
+  children?: React.ReactNode
+}) => <h2 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+const MarkdownH3 = ({
+  node,
+  ...props
+}: {
+  node?: { position?: { start: { line: number } } }
+  children?: React.ReactNode
+}) => <h3 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+const MarkdownH4 = ({
+  node,
+  ...props
+}: {
+  node?: { position?: { start: { line: number } } }
+  children?: React.ReactNode
+}) => <h4 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+const MarkdownH5 = ({
+  node,
+  ...props
+}: {
+  node?: { position?: { start: { line: number } } }
+  children?: React.ReactNode
+}) => <h5 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
+const MarkdownH6 = ({
+  node,
+  ...props
+}: {
+  node?: { position?: { start: { line: number } } }
+  children?: React.ReactNode
+}) => <h6 id={makeHeadingId(node, props.children)} className="scroll-mt-20" {...props} />
 
 const markdownComponents = {
   code: MarkdownCode,
@@ -235,39 +252,40 @@ const markdownComponents = {
 
 export const MarkdownRenderer = ({ content }: MarkdownRendererProps) => {
   const { settings } = useSettings()
-  const isDark = settings.theme === "dark"
+  const isDark = settings.theme === 'dark'
 
   return (
     <div
       className={cn(
-        "prose prose-sm max-w-none text-foreground",
-        isDark && "prose-invert",
-        "prose-headings:font-semibold prose-headings:text-foreground",
-        "prose-p:text-foreground prose-li:text-foreground prose-td:text-foreground prose-th:text-foreground",
-        "prose-a:text-primary prose-a:no-underline hover:prose-a:underline",
-        "prose-strong:text-foreground prose-strong:font-semibold",
-        "prose-em:text-foreground",
-        "prose-code:text-primary prose-code:bg-surface prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm",
-        "prose-pre:bg-transparent prose-pre:p-0 prose-pre:border-0",
-        "prose-blockquote:text-foreground/85 prose-blockquote:border-l-primary prose-blockquote:border-l-4 prose-blockquote:pl-4 prose-blockquote:italic",
-        "prose-ul:list-disc prose-ol:list-decimal",
-        "prose-li:marker:text-primary",
-        "prose-hr:border-border",
-        "prose-img:rounded-lg prose-img:shadow-md"
+        'prose prose-sm max-w-none text-foreground',
+        isDark && 'prose-invert',
+        'prose-headings:font-semibold prose-headings:text-foreground',
+        'prose-p:text-foreground prose-li:text-foreground prose-td:text-foreground prose-th:text-foreground',
+        'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
+        'prose-strong:text-foreground prose-strong:font-semibold',
+        'prose-em:text-foreground',
+        'prose-code:text-primary prose-code:bg-surface prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm',
+        'prose-pre:bg-transparent prose-pre:p-0 prose-pre:border-0',
+        'prose-blockquote:text-foreground/85 prose-blockquote:border-l-primary prose-blockquote:border-l-4 prose-blockquote:pl-4 prose-blockquote:italic',
+        'prose-ul:list-disc prose-ol:list-decimal',
+        'prose-li:marker:text-primary',
+        'prose-hr:border-border',
+        'prose-img:rounded-lg prose-img:shadow-md',
       )}
       style={{
         fontSize: `${settings.fontSize}px`,
         lineHeight: `${settings.lineHeight}`,
-        fontFamily: settings.fontFamily === "inter" ? "Inter, sans-serif" :
-          settings.fontFamily === "georgia" ? "Georgia, serif" :
-            settings.fontFamily === "jetbrains" ? "'JetBrains Mono', monospace" :
-              "system-ui, -apple-system, sans-serif",
+        fontFamily:
+          settings.fontFamily === 'inter'
+            ? 'Inter, sans-serif'
+            : settings.fontFamily === 'georgia'
+              ? 'Georgia, serif'
+              : settings.fontFamily === 'jetbrains'
+                ? "'JetBrains Mono', monospace"
+                : 'system-ui, -apple-system, sans-serif',
       }}
     >
-      <ReactMarkdown
-        remarkPlugins={remarkPlugins}
-        components={markdownComponents}
-      >
+      <ReactMarkdown remarkPlugins={remarkPlugins} components={markdownComponents}>
         {content}
       </ReactMarkdown>
     </div>

@@ -1,12 +1,23 @@
-import { Button } from "@/components/ui/button"
-import { Slider } from "@/components/ui/slider"
-import type { MarkdownHistoryEntry } from "@/hooks/useLocalStorage"
-import { applyTheme, type Theme } from "@/lib/themes"
-import { cn } from "@/lib/utils"
-import { useSettings } from "@/stores/settingsStore"
-import { AnimatePresence, motion } from "framer-motion"
-import { AlignLeft, Check, ChevronRight, ExternalLink, History, Palette, Settings, Trash2, Type, X } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { Button } from '@/components/ui/button'
+import { Slider } from '@/components/ui/slider'
+import type { MarkdownHistoryEntry } from '@/hooks/useLocalStorage'
+import { applyTheme, type Theme } from '@/lib/themes'
+import { cn } from '@/lib/utils'
+import { useSettings } from '@/stores/settingsStore'
+import { AnimatePresence, motion } from 'framer-motion'
+import {
+  AlignLeft,
+  Check,
+  ChevronRight,
+  ExternalLink,
+  History,
+  Palette,
+  Settings,
+  Trash2,
+  Type,
+  X,
+} from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 type SettingsSidebarProps = {
   isOpen: boolean
@@ -18,17 +29,17 @@ type SettingsSidebarProps = {
 }
 
 const themeOptions: { value: Theme; label: string; emoji: string }[] = [
-  { value: "warm", label: "Warm", emoji: "🌅" },
-  { value: "cool", label: "Cool", emoji: "❄️" },
-  { value: "dark", label: "Dark", emoji: "🌙" },
-  { value: "sepia", label: "Sepia", emoji: "📜" },
+  { value: 'warm', label: 'Warm', emoji: '🌅' },
+  { value: 'cool', label: 'Cool', emoji: '❄️' },
+  { value: 'dark', label: 'Dark', emoji: '🌙' },
+  { value: 'sepia', label: 'Sepia', emoji: '📜' },
 ]
 
-const fontOptions: { value: "inter" | "georgia" | "jetbrains" | "system"; label: string }[] = [
-  { value: "inter", label: "Inter" },
-  { value: "georgia", label: "Georgia" },
-  { value: "jetbrains", label: "JetBrains Mono" },
-  { value: "system", label: "System" },
+const fontOptions: { value: 'inter' | 'georgia' | 'jetbrains' | 'system'; label: string }[] = [
+  { value: 'inter', label: 'Inter' },
+  { value: 'georgia', label: 'Georgia' },
+  { value: 'jetbrains', label: 'JetBrains Mono' },
+  { value: 'system', label: 'System' },
 ]
 
 const getHistoryPreview = (entry: MarkdownHistoryEntry) => {
@@ -40,22 +51,22 @@ const getHistoryPreview = (entry: MarkdownHistoryEntry) => {
 
   const previewLine = lines.find((line) => {
     const cleanedLine = line
-      .replace(/^#{1,6}\s+/, "")
-      .replace(/[_*`~]+/g, "")
-      .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+      .replace(/^#{1,6}\s+/, '')
+      .replace(/[_*`~]+/g, '')
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
       .trim()
 
     return cleanedLine.length > 0 && cleanedLine.toLowerCase() !== normalizedTitle
   })
 
   if (!previewLine) {
-    return "No additional preview text"
+    return 'No additional preview text'
   }
 
   return previewLine
-    .replace(/^#{1,6}\s+/, "")
-    .replace(/[_*`~]+/g, "")
-    .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+    .replace(/^#{1,6}\s+/, '')
+    .replace(/[_*`~]+/g, '')
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
     .slice(0, 72)
 }
 
@@ -67,7 +78,8 @@ export const SettingsSidebar = ({
   onHistoryEntrySelect,
   onHistoryEntryDelete,
 }: SettingsSidebarProps) => {
-  const { settings, updateTheme, updateFontSize, updateLineHeight, updateFontFamily } = useSettings()
+  const { settings, updateTheme, updateFontSize, updateLineHeight, updateFontFamily } =
+    useSettings()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [isScrolling, setIsScrolling] = useState(false)
   const [pendingDeleteEntryId, setPendingDeleteEntryId] = useState<string | null>(null)
@@ -89,9 +101,9 @@ export const SettingsSidebar = ({
       }, 1000)
     }
 
-    container.addEventListener("scroll", handleScroll)
+    container.addEventListener('scroll', handleScroll)
     return () => {
-      container.removeEventListener("scroll", handleScroll)
+      container.removeEventListener('scroll', handleScroll)
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
       }
@@ -145,7 +157,7 @@ export const SettingsSidebar = ({
             initial={{ x: 400, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 400, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed right-0 top-0 h-full w-80 bg-surface/95 backdrop-blur-md border-l border-border shadow-xl z-40 flex flex-col"
           >
             <div className="flex items-center justify-between p-2 border-b border-border">
@@ -153,20 +165,15 @@ export const SettingsSidebar = ({
                 <Settings className="h-5 w-5" />
                 Settings
               </h2>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onToggle}
-                className="h-8 w-8"
-              >
+              <Button variant="ghost" size="icon" onClick={onToggle} className="h-8 w-8">
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
             <div
               ref={scrollContainerRef}
               className={cn(
-                "flex-1 overflow-y-auto p-2 space-y-7 outline-scrollbar",
-                isScrolling && "scrolling"
+                'flex-1 overflow-y-auto p-2 space-y-7 outline-scrollbar',
+                isScrolling && 'scrolling',
               )}
             >
               <div className="space-y-2">
@@ -182,11 +189,13 @@ export const SettingsSidebar = ({
                       whileTap={{ scale: 0.95 }}
                     >
                       <Button
-                        variant={settings.theme === option.value ? "default" : "outline"}
+                        variant={settings.theme === option.value ? 'default' : 'outline'}
                         onClick={() => handleThemeChange(option.value)}
                         className={cn(
-                          "h-auto py-3 flex flex-col items-center gap-1 w-full",
-                          settings.theme === "dark" && settings.theme === option.value && "text-[#2D293D] hover:text-[#2D293D]"
+                          'h-auto py-3 flex flex-col items-center gap-1 w-full',
+                          settings.theme === 'dark' &&
+                            settings.theme === option.value &&
+                            'text-[#2D293D] hover:text-[#2D293D]',
                         )}
                       >
                         <span className="text-xl">{option.emoji}</span>
@@ -210,17 +219,23 @@ export const SettingsSidebar = ({
                       whileTap={{ scale: 0.98 }}
                     >
                       <Button
-                        variant={settings.fontFamily === option.value ? "default" : "outline"}
+                        variant={settings.fontFamily === option.value ? 'default' : 'outline'}
                         onClick={() => updateFontFamily(option.value)}
                         className={cn(
-                          "w-full h-auto py-2.5 text-sm",
-                          settings.theme === "dark" && settings.fontFamily === option.value && "text-[#2D293D] hover:text-[#2D293D]"
+                          'w-full h-auto py-2.5 text-sm',
+                          settings.theme === 'dark' &&
+                            settings.fontFamily === option.value &&
+                            'text-[#2D293D] hover:text-[#2D293D]',
                         )}
                         style={{
-                          fontFamily: option.value === "inter" ? "Inter, sans-serif" :
-                            option.value === "georgia" ? "Georgia, serif" :
-                              option.value === "jetbrains" ? "'JetBrains Mono', monospace" :
-                                "system-ui, sans-serif"
+                          fontFamily:
+                            option.value === 'inter'
+                              ? 'Inter, sans-serif'
+                              : option.value === 'georgia'
+                                ? 'Georgia, serif'
+                                : option.value === 'jetbrains'
+                                  ? "'JetBrains Mono', monospace"
+                                  : 'system-ui, sans-serif',
                         }}
                       >
                         {option.label}
@@ -295,24 +310,24 @@ export const SettingsSidebar = ({
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, x: 24, scale: 0.96 }}
                           transition={{
-                            layout: { type: "spring", stiffness: 380, damping: 32 },
+                            layout: { type: 'spring', stiffness: 380, damping: 32 },
                             opacity: { duration: 0.18 },
-                            y: { type: "spring", stiffness: 420, damping: 30 },
+                            y: { type: 'spring', stiffness: 420, damping: 30 },
                           }}
                           className="relative"
                         >
                           <Button
-                            variant={isSelected ? "default" : "outline"}
+                            variant={isSelected ? 'default' : 'outline'}
                             onClick={() => onHistoryEntrySelect(entry.id)}
                             className={cn(
-                              "h-auto w-full cursor-pointer items-start justify-between px-3 py-3 pr-24 text-left",
-                              settings.theme === "dark" && isSelected && "text-[#2D293D] hover:text-[#2D293D]"
+                              'h-auto w-full cursor-pointer items-start justify-between px-3 py-3 pr-24 text-left',
+                              settings.theme === 'dark' &&
+                                isSelected &&
+                                'text-[#2D293D] hover:text-[#2D293D]',
                             )}
                           >
                             <div className="min-w-0 flex-1">
-                              <div className="truncate text-sm font-medium">
-                                {entry.title}
-                              </div>
+                              <div className="truncate text-sm font-medium">{entry.title}</div>
                               <div className="mt-1 text-xs text-muted-foreground">
                                 {previewText}
                               </div>
@@ -321,10 +336,10 @@ export const SettingsSidebar = ({
                               <div className="absolute right-2 top-2 flex items-center gap-2">
                                 <span
                                   className={cn(
-                                    "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium",
-                                    settings.theme === "dark"
-                                      ? "bg-secondary/85 text-secondary-foreground"
-                                      : "bg-background/70 text-foreground"
+                                    'inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium',
+                                    settings.theme === 'dark'
+                                      ? 'bg-secondary/85 text-secondary-foreground'
+                                      : 'bg-background/70 text-foreground',
                                   )}
                                 >
                                   <Check className="h-3 w-3" />
@@ -347,10 +362,10 @@ export const SettingsSidebar = ({
                                       handleDeleteConfirm(entry)
                                     }}
                                     className={cn(
-                                      "h-8 w-8 cursor-pointer text-muted-foreground",
+                                      'h-8 w-8 cursor-pointer text-muted-foreground',
                                       suppressHover
-                                        ? "pointer-events-none"
-                                        : "hover:bg-emerald-500/10 hover:text-emerald-600"
+                                        ? 'pointer-events-none'
+                                        : 'hover:bg-emerald-500/10 hover:text-emerald-600',
                                     )}
                                     aria-label={`Confirm deleting ${entry.title} from history`}
                                   >
@@ -366,10 +381,10 @@ export const SettingsSidebar = ({
                                       handleDeleteAbort()
                                     }}
                                     className={cn(
-                                      "h-8 w-8 cursor-pointer text-muted-foreground",
+                                      'h-8 w-8 cursor-pointer text-muted-foreground',
                                       suppressHover
-                                        ? "pointer-events-none"
-                                        : "hover:bg-primary hover:text-primary-foreground"
+                                        ? 'pointer-events-none'
+                                        : 'hover:bg-primary hover:text-primary-foreground',
                                     )}
                                     aria-label={`Cancel deleting ${entry.title} from history`}
                                   >
@@ -420,7 +435,7 @@ export const SettingsSidebar = ({
           initial={{ x: 400, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 400, opacity: 0 }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           onClick={onToggle}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

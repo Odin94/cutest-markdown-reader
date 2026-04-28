@@ -1,5 +1,5 @@
-import { motion } from "framer-motion"
-import { MarkdownRenderer } from "./MarkdownRenderer"
+import { motion } from 'framer-motion'
+import { MarkdownRenderer } from './MarkdownRenderer'
 
 type ReadModeProps = {
   markdown: string

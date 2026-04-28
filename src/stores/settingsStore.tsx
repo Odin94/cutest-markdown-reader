@@ -1,9 +1,9 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { applyTheme } from "@/lib/themes"
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { applyTheme } from '@/lib/themes'
 
-type Theme = "warm" | "cool" | "dark" | "sepia"
+type Theme = 'warm' | 'cool' | 'dark' | 'sepia'
 
-type FontFamily = "inter" | "georgia" | "jetbrains" | "system"
+type FontFamily = 'inter' | 'georgia' | 'jetbrains' | 'system'
 
 type Settings = {
   theme: Theme
@@ -13,13 +13,13 @@ type Settings = {
 }
 
 const defaultSettings: Settings = {
-  theme: "warm",
+  theme: 'warm',
   fontSize: 16,
   lineHeight: 1.6,
-  fontFamily: "inter",
+  fontFamily: 'inter',
 }
 
-const STORAGE_KEY = "cutest-markdown-settings"
+const STORAGE_KEY = 'cutest-markdown-settings'
 
 type SettingsContextType = {
   settings: Settings
@@ -39,7 +39,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         return { ...defaultSettings, ...JSON.parse(stored) }
       }
     } catch (error) {
-      console.error("Error reading settings from localStorage:", error)
+      console.error('Error reading settings from localStorage:', error)
     }
     return defaultSettings
   })
@@ -52,7 +52,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
     } catch (error) {
-      console.error("Error writing settings to localStorage:", error)
+      console.error('Error writing settings to localStorage:', error)
     }
   }, [settings])
 
@@ -84,7 +84,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 export const useSettings = () => {
   const context = useContext(SettingsContext)
   if (context === undefined) {
-    throw new Error("useSettings must be used within a SettingsProvider")
+    throw new Error('useSettings must be used within a SettingsProvider')
   }
   return context
 }
